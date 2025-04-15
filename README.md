@@ -63,15 +63,10 @@ The application uses a JWT (JSON Web Token) based authentication system with the
 
 1. Install dependencies:
 ```bash
-pip install fastapi[all] sqlalchemy psycopg2-binary passlib[bcrypt] python-jose[cryptography]
+pip install -r requirements.txt
 ```
 
 2. Run the application:
 ```bash
 uvicorn app.main:app --reload
 ```
-
-3. Access the API documentation:
-```
-http://localhost:8000/docs
-``` 
