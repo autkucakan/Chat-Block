@@ -1,63 +1,203 @@
-# Block Chat API
+### 1. Introduction
+Block Chat is a modern real-time chat application built with FastAPI and WebSocket technology, providing users with a seamless communication experience. The application enables users to engage in both direct messaging and group conversations while maintaining high performance and security standards.
 
-A real-time chat application API built with FastAPI.
+### 2. Product Overview
+#### 2.1 Purpose
+Block Chat aims to provide a reliable, secure, and user-friendly platform for real-time communication, suitable for both personal and professional use.
 
-## Authentication System
+#### 2.2 Target Audience
+- Individual users seeking personal communication
+- Small to medium-sized teams
+- Communities requiring group chat functionality
 
-The application uses a JWT (JSON Web Token) based authentication system with the following components:
+### 3. Technical Architecture
+#### 3.1 Backend Stack
+- **Framework**: FastAPI
+- **Real-time Communication**: WebSocket
+- **Authentication**: JWT (JSON Web Tokens)
 
-### 1. File Structure
+#### 3.2 Core Components
+1. **Authentication System** (`auth.py`)
+   - User registration and login
+   - JWT-based authentication
+   - Session management
+   - Password recovery
 
-- `app/routers/oauth2.py`: Core JWT functionality, token creation, validation, and login
-- `app/routers/auth.py`: Implements user registration
+2. **User Management** (`users.py`)
+   - User profile management
+   - Status management (online/offline/away)
+   - User search and discovery
+   - Profile customization
 
-### 2. Authentication Flow
+3. **Chat Management** (`chats.py`)
+   - Direct messaging
+   - Group chat creation and management
+   - Chat room settings and permissions
+   - Member management
 
-1. **Registration**: Users register with username, email, and password
-   - POST `/api/auth/register`
-   - Password is hashed with bcrypt before storage
-   - Returns the created user without the password
+4. **Message System** (`messages.py`)
+   - Text message handling
+   - Message history
+   - Message editing and deletion
+   - Read receipts
 
-2. **Login**: Users login with username and password
-   - POST `/api/auth/login`
-   - Verifies the credentials against the database
-   - Returns a JWT token upon successful authentication
+5. **WebSocket Handler** (`websocket.py`)
+   - Real-time message delivery
+   - Typing indicators
+   - Online status updates
+   - Connection management
 
-3. **Access Protected Routes**: Protected routes require a valid JWT token
-   - Include the token in the Authorization header: `Bearer <token>`
-   - The token is automatically verified and the user is extracted
-   - If the token is invalid or expired, a 401 Unauthorized error is returned
+### 4. Feature Requirements
+#### 4.1 Core Features
+1. **Authentication**
+   - Secure user registration and login
+   - Password encryption
+   - Session management
+   - Remember me functionality
 
-### 3. Token Security
+2. **Messaging**
+   - Real-time message delivery
+   - Message history
+   - Read receipts
+   - Typing indicators
+   - Message editing and deletion
+   - Rich text support
 
-- Tokens expire after 30 minutes (configurable)
-- Uses HS256 algorithm for signing
-- Contains the user_id in the payload
-- Secret key is used for signing (should be stored as an environment variable in production)
+3. **Chat Management**
+   - Create individual and group chats
+   - Add/remove participants
+   - Chat settings management
+   - Chat search functionality
 
-## API Endpoints
+4. **User Features**
+   - User profile customization
+   - Status updates
+   - User search
+   - Contact/friend management
+   - Block/mute users
 
-### Authentication
+#### 4.2 Advanced Features
+1. **File Sharing**
+   - Support for multiple file types
+   - File preview
+   - Secure file storage
+   - File download management
 
-- `POST /api/auth/register` - Register a new user
-- `POST /api/auth/login` - Login and get access token
-- `GET /api/auth/me` - Get current user info
+2. **Notifications**
+   - Push notifications
+   - Email notifications
+   - Notification preferences
+   - Mention notifications
 
-### Users
+3. **Message Features**
+   - Message reactions
+   - Message threading
+   - Message search
+   - Message forwarding
 
-- `GET /api/users` - Get all users
-- `GET /api/users/{user_id}` - Get user by ID
+### 5. API Structure
+#### 5.1 Endpoints
+1. auth.py
+POST /auth/register - Register a new user
+POST /auth/login - User login (returns JWT token)
+POST /auth/refresh - Refresh JWT token
+GET /auth/me - Get current user's profile
 
-### Chats
+2. users.py
+GET /users - Get list of users (with pagination)
+GET /users/{user_id} - Get specific user profile
+PUT /users/{user_id} - Update user profile
+DELETE /users/{user_id} - Delete user account
+GET /users/{user_id}/status - Get user online status
+PUT /users/{user_id}/status - Update user status (online/offline/away)
 
-- `GET /api/chats` - Get user's chats
-- `POST /api/chats` - Create a new chat
-- `GET /api/chats/{chat_id}` - Get chat by ID
+3. chats.py
+GET /chats - Get list of user's chats/conversations
+POST /chats - Create new chat (group or direct message)
+GET /chats/{chat_id} - Get chat details
+PUT /chats/{chat_id} - Update chat details (rename, etc.)
+DELETE /chats/{chat_id} - Delete chat
+POST /chats/{chat_id}/members - Add members to chat
+DELETE /chats/{chat_id}/members/{user_id} - Remove member from chat
 
-### Messages
+4. messages.py
+GET /chats/{chat_id}/messages - Get messages in a chat (with pagination)
+POST /chats/{chat_id}/messages - Send new message
+PUT /chats/{chat_id}/messages/{message_id} - Edit message
+DELETE /chats/{chat_id}/messages/{message_id} - Delete message
+GET /chats/{chat_id}/messages/{message_id}/read-status - Get message read status
+PUT /chats/{chat_id}/messages/read - Mark messages as read
 
-- `GET /api/messages/{chat_id}` - Get messages for a chat
-- `POST /api/messages` - Send a new message
+5. websocket.py
+WebSocket /ws/chat/{chat_id} - WebSocket connection for real-time chat
+WebSocket /ws/status - WebSocket connection for user status updates
+
+### 6. Security Requirements
+- JWT-based authentication
+- Password hashing
+- Rate limiting
+- Input validation
+- XSS protection
+- CORS configuration
+- Secure WebSocket connections
+
+### 7. Performance Requirements
+- Message delivery latency < 500ms
+- Support for concurrent users
+- Efficient message history loading
+- Optimized database queries
+- Proper connection pooling
+- Caching implementation
+
+### 8. Data Management
+#### 8.1 Database Schema
+- Users table
+- Chats table
+- Messages table
+- Chat members table
+- Friend requests table
+- Notifications table
+
+#### 8.2 Data Retention
+- Message history retention policy
+- File storage limits
+- User data management
+- Backup procedures
+
+### 9. Future Enhancements
+- Voice and video calls
+- End-to-end encryption
+- Message scheduling
+- Custom emoji support
+- Integration with third-party services
+- Mobile application development
+
+### 10. Success Metrics
+- User engagement rates
+- Message delivery success rate
+- System uptime
+- Response times
+- User growth rate
+- Active chat sessions
+
+### 11. Development Phases
+#### Phase 1: Core Features
+- Basic authentication
+- Direct messaging
+- User profiles
+- Real-time message delivery
+
+#### Phase 2: Enhanced Features
+- Group chat functionality
+- File sharing
+- Message search
+- User status
+
+#### Phase 3: Advanced Features
+- Notifications
+- Message reactions
+- Threading
+- Advanced security features
 
 ## Getting Started
 
