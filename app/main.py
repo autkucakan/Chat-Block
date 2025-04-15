@@ -1,15 +1,17 @@
 from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
-from .database import get_db
+from app.database import get_db, create_tables
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import text
 from app.routers import auth, users, chats, messages
+
+create_tables()
 
 app = FastAPI(
     title="Block Chat",
     description="Real-time chat application API",
     version="0.1.0"
-)
+)    
 
 #CORS: bir tür güvenlik mekanizması.
 # Bir web sitesi farklı bir domain'den veri istediğinde, tarayıcı önce bir "preflight" isteği gönderir

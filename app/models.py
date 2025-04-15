@@ -1,10 +1,8 @@
 from sqlalchemy import Column, Integer, String, Text, ForeignKey, DateTime, Boolean, Table
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.sqltypes import TIMESTAMP
 from sqlalchemy.sql import text
-
-Base = declarative_base() #Temel sınıfımız
+from app.database import Base
 
 chat_users = Table(
     'chat_users',
