@@ -1,46 +1,109 @@
 # Block Chat API
 
-A real-time chat application API built with FastAPI.
+A real-time chat application API built with FastAPI and PostgreSQL.
 
-## Authentication System
+## 1. Introduction
 
-The application uses a JWT (JSON Web Token) based authentication system with the following components:
+Block Chat is a modern chat application API that allows users to register, login, create chats, and exchange messages in real-time. The API is built using FastAPI for high performance and SQLAlchemy with PostgreSQL for reliable data storage.
 
-### 1. File Structure
+## 2. Features
 
-- `app/routers/oauth2.py`: Core JWT functionality, token creation, validation, and login
-- `app/routers/auth.py`: Implements user registration
+- **Authentication System**
+  - JWT-based authentication
+  - Secure password hashing with bcrypt
+  - User registration and login
+  - Token refresh endpoint
 
-### 2. Authentication Flow
+- **User Management**
+  - Create and manage user accounts
+  - View user profiles
 
-1. **Registration**: Users register with username, email, and password
-   - POST `/api/auth/register`
-   - Password is hashed with bcrypt before storage
-   - Returns the created user without the password
+- **Chat System**
+  - Create individual and group chats
+  - Add/remove users from chats
 
-2. **Login**: Users login with username and password
-   - POST `/api/auth/login`
-   - Verifies the credentials against the database
-   - Returns a JWT token upon successful authentication
+- **Messaging**
+  - Send and receive messages
+  - Read status tracking
+  - Message timestamps
 
-3. **Access Protected Routes**: Protected routes require a valid JWT token
-   - Include the token in the Authorization header: `Bearer <token>`
-   - The token is automatically verified and the user is extracted
-   - If the token is invalid or expired, a 401 Unauthorized error is returned
+## 3. Project Structure
 
-### 3. Token Security
+```
+Chat-Block/
+│
+├── app/
+│   ├── __init__.py
+│   ├── main.py                  # FastAPI application entry point
+│   ├── database.py              # Database configuration and connection
+│   ├── models.py                # SQLAlchemy data models
+│   ├── schemas.py               # Pydantic schemas for request/response validation
+│   │
+│   └── routers/
+│       ├── __init__.py
+│       ├── auth.py              # Authentication endpoints (register, login, me)
+│       ├── oauth2.py            # JWT token handling and user authentication
+│       ├── users.py             # User-related endpoints
+│       ├── chats.py             # Chat-related endpoints
+│       └── messages.py          # Message-related endpoints
+│
+└── README.md                    # Project documentation
+```
 
-- Tokens expire after 30 minutes (configurable)
-- Uses HS256 algorithm for signing
-- Contains the user_id in the payload
-- Secret key is used for signing (should be stored as an environment variable in production)
+## 4. Installation
 
-## API Endpoints
+### Prerequisites
+
+- Python 3.8+
+- PostgreSQL
+
+### Step 1: Clone the repository
+
+```bash
+git clone https://github.com/yourusername/Chat-Block.git
+cd Chat-Block
+```
+
+### Step 2: Create a virtual environment
+
+```bash
+python -m venv venv
+source venv/bin/activate  # On Windows, use: venv\Scripts\activate
+```
+
+### Step 3: Install dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+If `requirements.txt` is not available, install the required packages:
+
+```bash
+pip install fastapi[all] sqlalchemy psycopg2-binary passlib[bcrypt] python-jose[cryptography] email-validator
+```
+
+### Step 4: Configure the database
+
+Create a PostgreSQL database and update the connection string in `app/database.py`:
+
+```python
+SQLALCHEMY_DATABASE_URL = "postgresql://username:password@localhost:5432/blockchat"
+```
+
+### Step 5: Run the application
+
+```bash
+uvicorn app.main:app --reload
+```
+
+## 5. API Endpoints
 
 ### Authentication
 
 - `POST /api/auth/register` - Register a new user
 - `POST /api/auth/login` - Login and get access token
+- `POST /api/auth/refresh` - Refresh access token
 - `GET /api/auth/me` - Get current user info
 
 ### Users
@@ -59,19 +122,41 @@ The application uses a JWT (JSON Web Token) based authentication system with the
 - `GET /api/messages/{chat_id}` - Get messages for a chat
 - `POST /api/messages` - Send a new message
 
-## Getting Started
+## 6. Authentication
 
-1. Install dependencies:
+The application uses JWT (JSON Web Token) for authentication. To access protected endpoints:
+
+1. Obtain a token via `/api/auth/login`
+2. Include the token in the Authorization header:
+   ```
+   Authorization: Bearer <your_token>
+   ```
+
+## 7. Development
+
+### Creating Requirements File
+
+To generate a requirements.txt file:
+
 ```bash
-pip install fastapi[all] sqlalchemy psycopg2-binary passlib[bcrypt] python-jose[cryptography]
+pip freeze > requirements.txt
 ```
 
-2. Run the application:
+### Running Tests
+
+To run tests (once implemented):
+
 ```bash
-uvicorn app.main:app --reload
+pytest
 ```
 
-3. Access the API documentation:
-```
-http://localhost:8000/docs
-``` 
+## 8. License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## 9. Contact
+
+For any questions or suggestions, please contact:
+
+- Email: ahmet.utku.cakan@gmail.com or voltry6@gmail.com
+- GitHub: [voltRy](https://github.com/voltry) or [autkucakan](https://github.com/autkucakan)
