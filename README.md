@@ -198,43 +198,42 @@ uvicorn app.main:app --reload
 
 ### Authentication
 
-- `POST /api/auth/register` - Register a new user
-- `POST /api/auth/login` - Login and get access token
-- `POST /api/auth/refresh` - Refresh access token
-- `POST /api/auth/refresh` - Refresh access token
-- `GET /api/auth/me` - Get current user info
+- `POST /auth/register` - Register a new user
+- `POST /auth/login` - User login (returns JWT token)
+- `POST /auth/refresh` - Refresh JWT token
+- `GET /auth/me` - Get current user's profile
 
 ### Users
 
-- `GET /api/users` - Get all users
-- `GET /api/users/{user_id}` - Get user by ID
+- `GET /users` - Get list of users (with pagination)
+- `GET /users/{user_id}` - Get specific user profile
+- `PUT /users/{user_id}` - Update user profile
+- `DELETE /users/{user_id}` - Delete user account
+- `GET /users/{user_id}/status` - Get user online status
+- `PUT /users/{user_id}/status` - Update user status (online/offline/away)
 
 ### Chats
 
-- `GET /api/chats` - Get user's chats
-- `POST /api/chats` - Create a new chat
-- `GET /api/chats/{chat_id}` - Get chat by ID
+- `GET /chats` - Get list of user's chats/conversations
+- `POST /chats` - Create new chat (group or direct message)
+- `GET /chats/{chat_id}` - Get chat details
+- `PUT /chats/{chat_id}` - Update chat details (rename, etc.)
+- `DELETE /chats/{chat_id}` - Delete chat
+- `POST /chats/{chat_id}/members` - Add members to chat
+- `DELETE /chats/{chat_id}/members/{user_id}` - Remove member from chat
 
 ### Messages
 
-- `GET /api/messages/{chat_id}` - Get messages for a chat
-- `POST /api/messages` - Send a new message
+- `GET /chats/{chat_id}/messages` - Get messages in a chat (with pagination)
+- `POST /chats/{chat_id}/messages` - Send new message
+- `PUT /chats/{chat_id}/messages/{message_id}` - Edit message
+- `DELETE /chats/{chat_id}/messages/{message_id}` - Delete message
+- `GET /chats/{chat_id}/messages/{message_id}/read-status` - Get message read status
+- `PUT /chats/{chat_id}/messages/read` - Mark messages as read
 
-## 6. Authentication
-
-The application uses JWT (JSON Web Token) for authentication. To access protected endpoints:
-
-1. Obtain a token via `/api/auth/login`
-2. Include the token in the Authorization header:
-   ```
-   Authorization: Bearer <your_token>
-   ```
-
-## 7. Development
-
-### Creating Requirements File
-
-To generate a requirements.txt file:
+### WebSocket
+- `WebSocket /ws/chat/{chat_id}` - WebSocket connection for real-time chat
+- `WebSocket /ws/status` - WebSocket connection for user status updates
 
 ## 6. Authentication
 
