@@ -1,16 +1,10 @@
 from sqlalchemy import Column, Integer, String, Text, ForeignKey, DateTime, Boolean, Table, Enum
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.sqltypes import TIMESTAMP
 from sqlalchemy.sql import text
 import enum
 
-Base = declarative_base() #Temel sınıfımız
-
-class UserStatus(str, enum.Enum):
-    ONLINE = "online"
-    OFFLINE = "offline"
-    AWAY = "away"
+from .database import Base
 
 chat_users = Table(
     'chat_users',
@@ -19,6 +13,11 @@ chat_users = Table(
     Column('chat_id', Integer, ForeignKey('chats.id'), primary_key=True)
 )
 
+class UserStatus(str, enum.Enum):
+    ONLINE = "online"
+    OFFLINE = "offline"
+    AWAY = "away"
+
 class User(Base):
     __tablename__ = 'users'
     
@@ -26,10 +25,9 @@ class User(Base):
     username = Column(String(50), unique=True, index=True, nullable=False)
     email = Column(String(100), unique=True, index=True, nullable=False)
     hashed_password = Column(String(100), nullable=False)
-    full_name = Column(String(100))
     created_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=text('now()'))
-    status = Column(Enum(UserStatus), default=UserStatus.OFFLINE)
     last_seen = Column(TIMESTAMP(timezone=True), nullable=True)
+    status = Column(Enum(UserStatus), default=UserStatus.OFFLINE, nullable=False)
     
     chats = relationship("Chat", secondary=chat_users, back_populates="users")
     messages = relationship("Message", back_populates="user")

@@ -7,9 +7,13 @@ from .models import UserStatus
 class UserBase(BaseModel):
     username: str
     email: EmailStr
-    full_name: Optional[str] = None
 
 class UserCreate(UserBase):
+    password: str
+
+class UserUpdate(BaseModel):
+    username: str
+    email: EmailStr
     password: str
 
 class UserResponse(UserBase):
@@ -20,6 +24,9 @@ class UserResponse(UserBase):
 
     class Config:
         from_attributes = True
+
+class UserStatusUpdate(BaseModel):
+    status: UserStatus
 
 class ChatBase(BaseModel):
     name: str
@@ -59,4 +66,4 @@ class Token(BaseModel):
     token_type: str
 
 class TokenData(BaseModel):
-    username: Optional[str] = None
+    user_id: Optional[int] = None

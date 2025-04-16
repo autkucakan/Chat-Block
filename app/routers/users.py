@@ -1,67 +1,65 @@
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
 from typing import List, Optional
-from ..database import get_db
-from .. import models, schemas
-from . import oauth2
 from datetime import datetime
+
+from ..database import get_db
+from ..models import User, UserStatus
+from ..schemas import UserResponse, UserUpdate, UserStatusUpdate
+from .oauth2 import get_current_user
 
 router = APIRouter()
 
-@router.get("/", response_model=List[schemas.UserResponse])
-def get_users(
+@router.get("/", response_model=List[UserResponse])
+async def get_users(
     skip: int = Query(0, ge=0),
     limit: int = Query(10, ge=1, le=100),
     db: Session = Depends(get_db),
-    current_user: models.User = Depends(oauth2.get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """
-    Kullanıcı listesini sayfalama ile getirir.
+    Get list of users with pagination
     """
-    users = db.query(models.User).offset(skip).limit(limit).all()
+    users = db.query(User).offset(skip).limit(limit).all()
     return users
 
-@router.get("/{user_id}", response_model=schemas.UserResponse)
-def get_user(
+@router.get("/{user_id}", response_model=UserResponse)
+async def get_user(
     user_id: int,
     db: Session = Depends(get_db),
-    current_user: models.User = Depends(oauth2.get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """
-    Belirli bir kullanıcının profilini getirir.
+    Get specific user profile
     """
-    user = db.query(models.User).filter(models.User.id == user_id).first()
+    user = db.query(User).filter(User.id == user_id).first()
     if not user:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Kullanıcı bulunamadı"
+            detail="User not found"
         )
     return user
 
-@router.put("/{user_id}", response_model=schemas.UserResponse)
-def update_user(
+@router.put("/{user_id}", response_model=UserResponse)
+async def update_user(
     user_id: int,
-    user_update: schemas.UserBase,
+    user_update: UserUpdate,
     db: Session = Depends(get_db),
-    current_user: models.User = Depends(oauth2.get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
-    """
-    Kullanıcı profilini günceller.
-    """
     if current_user.id != user_id:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Bu işlem için yetkiniz yok"
+            detail="Not authorized to update this user"
         )
     
-    user = db.query(models.User).filter(models.User.id == user_id).first()
+    user = db.query(User).filter(User.id == user_id).first()
     if not user:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Kullanıcı bulunamadı"
+            detail="User not found"
         )
     
-    # Kullanıcı bilgilerini güncelle
     for field, value in user_update.dict(exclude_unset=True).items():
         setattr(user, field, value)
     
@@ -70,85 +68,75 @@ def update_user(
     return user
 
 @router.delete("/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_user(
+async def delete_user(
     user_id: int,
     db: Session = Depends(get_db),
-    current_user: models.User = Depends(oauth2.get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """
-    Kullanıcı hesabını siler.
+    Delete user account
     """
     if current_user.id != user_id:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Bu işlem için yetkiniz yok"
+            detail="Not authorized to delete this user"
         )
     
-    user = db.query(models.User).filter(models.User.id == user_id).first()
+    user = db.query(User).filter(User.id == user_id).first()
     if not user:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Kullanıcı bulunamadı"
+            detail="User not found"
         )
     
     db.delete(user)
     db.commit()
     return None
 
-@router.get("/{user_id}/status", response_model=dict)
-def get_user_status(
+@router.get("/{user_id}/status", response_model=UserStatusUpdate)
+async def get_user_status(
     user_id: int,
     db: Session = Depends(get_db),
-    current_user: models.User = Depends(oauth2.get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """
-    Kullanıcının çevrimiçi durumunu getirir.
+    Get user online status
     """
-    user = db.query(models.User).filter(models.User.id == user_id).first()
+    user = db.query(User).filter(User.id == user_id).first()
     if not user:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Kullanıcı bulunamadı"
+            detail="User not found"
         )
     
-    return {
-        "user_id": user.id,
-        "status": user.status.value,
-        "last_seen": user.last_seen.isoformat() if user.last_seen else None
-    }
+    return {"status": user.status}
 
-@router.put("/{user_id}/status", response_model=dict)
-def update_user_status(
+@router.put("/{user_id}/status", response_model=UserStatusUpdate)
+async def update_user_status(
     user_id: int,
-    new_status: models.UserStatus = Query(..., description="Kullanıcının yeni durumu"),
+    status_update: UserStatusUpdate,
     db: Session = Depends(get_db),
-    current_user: models.User = Depends(oauth2.get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """
-    Kullanıcının durumunu günceller (çevrimiçi/çevrimdışı/meşgul).
+    Update user status (online/offline/away)
     """
     if current_user.id != user_id:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Bu işlem için yetkiniz yok"
+            detail="Not authorized to update this user's status"
         )
     
-    user = db.query(models.User).filter(models.User.id == user_id).first()
+    user = db.query(User).filter(User.id == user_id).first()
     if not user:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Kullanıcı bulunamadı"
+            detail="User not found"
         )
     
-    # Kullanıcı durumunu güncelle
-    user.status = new_status
-    user.last_seen = datetime.now()
+    user.status = status_update.status
+    user.last_seen = datetime.utcnow()
     
     db.commit()
     db.refresh(user)
-    
-    return {
-        "user_id": user.id,
-        "status": user.status.value,
-        "last_seen": user.last_seen.isoformat()
-    }
+    return {"status": user.status}

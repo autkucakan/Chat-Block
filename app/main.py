@@ -48,5 +48,7 @@ def read_root(): #api çalışıyor mu
 @app.get("/api/test") #DB bağlanıyor mu
 def test_db(db: Session = Depends(get_db)):
     result = db.execute(text("SELECT 1"))
-    return {"status": "DB 200"} #Çalışmıyorsa 500 döndürüyor zaten
-
+    version = db.execute(text("SELECT version()")) #todo: deploylarken sil hiç güvenli değil
+    return {"status": "DB 200",
+            "version": version.fetchone()[0]
+    } #Çalışmıyorsa 500 döndürüyor zaten
