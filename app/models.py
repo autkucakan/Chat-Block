@@ -1,10 +1,16 @@
-from sqlalchemy import Column, Integer, String, Text, ForeignKey, DateTime, Boolean, Table
+from sqlalchemy import Column, Integer, String, Text, ForeignKey, DateTime, Boolean, Table, Enum
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.sqltypes import TIMESTAMP
 from sqlalchemy.sql import text
+import enum
 
 Base = declarative_base() #Temel sınıfımız
+
+class UserStatus(str, enum.Enum):
+    ONLINE = "online"
+    OFFLINE = "offline"
+    AWAY = "away"
 
 chat_users = Table(
     'chat_users',
@@ -22,7 +28,8 @@ class User(Base):
     hashed_password = Column(String(100), nullable=False)
     full_name = Column(String(100))
     created_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=text('now()'))
-    is_active = Column(Boolean, default=True)
+    status = Column(Enum(UserStatus), default=UserStatus.OFFLINE)
+    last_seen = Column(TIMESTAMP(timezone=True), nullable=True)
     
     chats = relationship("Chat", secondary=chat_users, back_populates="users")
     messages = relationship("Message", back_populates="user")

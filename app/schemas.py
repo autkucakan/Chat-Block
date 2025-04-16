@@ -1,5 +1,7 @@
 from pydantic import BaseModel, EmailStr, Field
 from typing import List, Optional
+from datetime import datetime
+from .models import UserStatus
 
 class UserBase(BaseModel):
     username: str
@@ -11,8 +13,9 @@ class UserCreate(UserBase):
 
 class UserResponse(UserBase):
     id: int
-    created_at: str
-    is_active: bool
+    created_at: datetime
+    status: UserStatus
+    last_seen: Optional[datetime] = None
 
     class Config:
         orm_mode = True
