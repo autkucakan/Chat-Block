@@ -39,7 +39,7 @@ app.add_middleware(
 app.include_router(auth.router, prefix="/api/auth", tags=["Authentication"])
 app.include_router(users.router, prefix="/api/users", tags=["Users"])
 app.include_router(chats.router, prefix="/api/chats", tags=["Chats"])
-app.include_router(messages.router, prefix="/api/messages", tags=["Messages"])
+app.include_router(messages.router, prefix="/api", tags=["Messages"])
 
 @app.get("/")
 def read_root(): #api çalışıyor mu
