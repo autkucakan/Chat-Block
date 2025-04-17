@@ -23,23 +23,27 @@ app = FastAPI(
 
 origins = [
     "http://localhost:3000",
-    "http://127.0.0.1:3000"
-] #şimdilik bunlar allowed origin ama duruma göre değiştir
+    "http://127.0.0.1:3000",
+    "http://localhost",
+    "http://127.0.0.1",
+    "http://localhost:5500",  # Common port for live servers
+    "http://127.0.0.1:5500",
+]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], # api.blockchat.com olacak: origins var kullanılacak
+    allow_origins=["*"],  # Use the specific origins list instead of "*"
     allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE"], # kullanılabilecek http methodları
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],  # Add OPTIONS
     allow_headers=[
         "Authorization",
         "Content-Type",
         "Accept",
         "Origin",
         "X-Requested-With",
-    ], # izin verilen http headerlari
+    ],
     expose_headers=["*"],
-    max_age=600, # 10 dakika (cors ön kontrol önbellek süresi)
+    max_age=600,
 )
 
 app.include_router(auth.router, prefix="/api/auth", tags=["Authentication"])

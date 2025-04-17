@@ -4,3 +4,6 @@ app/routers/__pycache__
 
 #env
 .env
+
+#
+venv

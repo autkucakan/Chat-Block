@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Block Chat</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Login/Register Forms will be loaded here when not authenticated -->
+        <!-- Chat UI will be loaded here when authenticated -->
+    </div>
+
+    <!-- Templates -->
+    <template id="login-template">
+        <div class="auth-container">
+            <div class="auth-box">
+                <h1>Block Chat</h1>
+                <div class="auth-tabs">
+                    <button class="auth-tab active" data-tab="login">Login</button>
+                    <button class="auth-tab" data-tab="register">Register</button>
+                </div>
+                <div class="auth-form active" id="login-form">
+                    <form id="login-form-element">
+                        <div class="form-group">
+                            <label for="login-username">Username</label>
+                            <input type="text" id="login-username" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="login-password">Password</label>
+                            <input type="password" id="login-password" required>
+                        </div>
+                        <div class="form-error" id="login-error"></div>
+                        <button type="submit" class="btn-primary">Login</button>
+                    </form>
+                </div>
+                <div class="auth-form" id="register-form">
+                    <form id="register-form-element">
+                        <div class="form-group">
+                            <label for="register-username">Username</label>
+                            <input type="text" id="register-username" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="register-email">Email</label>
+                            <input type="email" id="register-email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="register-password">Password</label>
+                            <input type="password" id="register-password" required>
+                        </div>
+                        <div class="form-error" id="register-error"></div>
+                        <button type="submit" class="btn-primary">Register</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="chat-template">
+        <div class="chat-container">
+            <div class="sidebar">
+                <div class="sidebar-header">
+                    <h2>Chats</h2>
+                    <button id="create-chat-btn" class="icon-btn">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
+                <div class="sidebar-search">
+                    <input type="text" id="search-chats" placeholder="Search chats...">
+                </div>
+                <div class="chat-list" id="chat-list">
+                    <!-- Chat list items will be added here -->
+                    <div class="loading-spinner" id="chats-loading">
+                        <div class="spinner"></div>
+                    </div>
+                </div>
+                <div class="sidebar-footer">
+                    <div class="user-info" id="user-info">
+                        <!-- User info will be displayed here -->
+                    </div>
+                    <button id="logout-btn" class="icon-btn">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="main-content">
+                <div id="welcome-screen" class="welcome-screen">
+                    <div class="welcome-content">
+                        <h2>Welcome to Block Chat</h2>
+                        <p>Select a chat to start messaging</p>
+                    </div>
+                </div>
+                <div id="chat-screen" class="chat-screen hidden">
+                    <div class="chat-header" id="chat-header">
+                        <!-- Chat header information will be added here -->
+                    </div>
+                    <div class="messages-container" id="messages-container">
+                        <div class="loading-spinner" id="messages-loading">
+                            <div class="spinner"></div>
+                        </div>
+                        <div id="messages">
+                            <!-- Messages will be added here -->
+                        </div>
+                    </div>
+                    <div class="message-input">
+                        <form id="message-form">
+                            <input type="text" id="message-text" placeholder="Type a message..." autocomplete="off">
+                            <button type="submit" class="send-btn">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="create-chat-template">
+        <div class="modal" id="create-chat-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Create New Chat</h2>
+                    <button class="close-btn" id="close-modal-btn">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <form id="create-chat-form">
+                        <div class="form-group">
+                            <label for="chat-name">Chat Name</label>
+                            <input type="text" id="chat-name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="chat-type">Chat Type</label>
+                            <select id="chat-type">
+                                <option value="false">Direct Message</option>
+                                <option value="true">Group Chat</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Select Users</label>
+                            <div class="users-list" id="users-list">
+                                <div class="loading-spinner">
+                                    <div class="spinner"></div>
+                                </div>
+                                <!-- Users will be added here -->
+                            </div>
+                        </div>
+                        <div class="form-error" id="create-chat-error"></div>
+                        <button type="submit" class="btn-primary">Create Chat</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- Scripts -->
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/chat.js"></script>
+    <script src="js/websocket.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html> 
