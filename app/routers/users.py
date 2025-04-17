@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
 from typing import List, Optional
-from datetime import datetime
+from datetime import datetime, timezone
 
 from ..database import get_db
 from ..models import User, UserStatus
@@ -17,9 +17,6 @@ async def get_users(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """
-    Get list of users with pagination
-    """
     users = db.query(User).offset(skip).limit(limit).all()
     return users
 
@@ -29,9 +26,6 @@ async def get_user(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """
-    Get specific user profile
-    """
     user = db.query(User).filter(User.id == user_id).first()
     if not user:
         raise HTTPException(
@@ -73,9 +67,6 @@ async def delete_user(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """
-    Delete user account
-    """
     if current_user.id != user_id:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
@@ -99,9 +90,6 @@ async def get_user_status(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """
-    Get user online status
-    """
     user = db.query(User).filter(User.id == user_id).first()
     if not user:
         raise HTTPException(
@@ -118,9 +106,6 @@ async def update_user_status(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """
-    Update user status (online/offline/away)
-    """
     if current_user.id != user_id:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
@@ -135,7 +120,7 @@ async def update_user_status(
         )
     
     user.status = status_update.status
-    user.last_seen = datetime.utcnow()
+    user.last_seen = datetime.now(timezone.utc)
     
     db.commit()
     db.refresh(user)

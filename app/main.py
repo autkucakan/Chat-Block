@@ -4,6 +4,7 @@ from app.database import get_db, create_tables
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import text
 from app.routers import auth, users, chats, messages
+from app.routers.websocket import router as websocket_router
 
 create_tables()
 
@@ -19,6 +20,11 @@ app = FastAPI(
 # Sunucu CORS ayarlarına göre "evet" veya "hayır" cevabı verir
 # İzin varsa, asıl istek gerçekleştirilir
 # powered by chatgpt
+
+origins = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000"
+] #şimdilik bunlar allowed origin ama duruma göre değiştir
 
 app.add_middleware(
     CORSMiddleware,
@@ -40,6 +46,7 @@ app.include_router(auth.router, prefix="/api/auth", tags=["Authentication"])
 app.include_router(users.router, prefix="/api/users", tags=["Users"])
 app.include_router(chats.router, prefix="/api/chats", tags=["Chats"])
 app.include_router(messages.router, prefix="/api", tags=["Messages"])
+app.include_router(websocket_router, prefix="/api/ws", tags=["WebSocket"])
 
 @app.get("/")
 def read_root(): #api çalışıyor mu

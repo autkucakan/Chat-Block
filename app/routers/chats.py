@@ -5,7 +5,7 @@ from sqlalchemy import and_
 
 from ..database import get_db
 from ..models import User, Chat, chat_users
-from ..schemas import ChatCreate, ChatResponse, UserResponse
+from ..schemas import ChatCreate, ChatResponse
 from .oauth2 import get_current_user
 
 router = APIRouter()
@@ -17,9 +17,6 @@ async def get_chats(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """
-    Get list of user's chats/conversations with pagination
-    """
     chats = db.query(Chat).join(chat_users).filter(
         chat_users.c.user_id == current_user.id
     ).offset(skip).limit(limit).all()
@@ -32,10 +29,6 @@ async def create_chat(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """
-    Create new chat (group or direct message)
-    """
-    # Verify all users exist
     for user_id in chat.user_ids:
         user = db.query(User).filter(User.id == user_id).first()
         if not user:
@@ -44,15 +37,13 @@ async def create_chat(
                 detail=f"User with id {user_id} not found"
             )
     
-    # Create new chat
     new_chat = Chat(
         name=chat.name,
         is_group_chat=chat.is_group_chat
     )
     db.add(new_chat)
     db.flush()
-    
-    # Add current user to chat
+
     db.execute(
         chat_users.insert().values(
             chat_id=new_chat.id,
@@ -60,9 +51,8 @@ async def create_chat(
         )
     )
     
-    # Add other users to chat
     for user_id in chat.user_ids:
-        if user_id != current_user.id:  # Avoid adding current user twice
+        if user_id != current_user.id: #aynı kişiyi tekrar eklememesi için
             db.execute(
                 chat_users.insert().values(
                     chat_id=new_chat.id,
@@ -80,10 +70,7 @@ async def get_chat(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """
-    Get chat details
-    """
-    # Check if chat exists and user is a member
+    #grupta var mi yok mu
     chat = db.query(Chat).join(chat_users).filter(
         and_(
             Chat.id == chat_id,
@@ -106,10 +93,6 @@ async def update_chat(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """
-    Update chat details (rename, etc.)
-    """
-    # Check if chat exists and user is a member
     chat = db.query(Chat).join(chat_users).filter(
         and_(
             Chat.id == chat_id,
@@ -123,7 +106,6 @@ async def update_chat(
             detail="Chat not found or you're not a member"
         )
     
-    # Update chat details
     chat.name = chat_data.name
     chat.is_group_chat = chat_data.is_group_chat
     
@@ -137,10 +119,7 @@ async def delete_chat(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """
-    Delete chat
-    """
-    # Check if chat exists and user is a member
+    #eleman var mı yok mu
     chat = db.query(Chat).join(chat_users).filter(
         and_(
             Chat.id == chat_id,
@@ -166,10 +145,6 @@ async def add_members(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """
-    Add members to chat
-    """
-    # Check if chat exists and user is a member
     chat = db.query(Chat).join(chat_users).filter(
         and_(
             Chat.id == chat_id,
@@ -183,9 +158,7 @@ async def add_members(
             detail="Chat not found or you're not a member"
         )
     
-    # Add new members
     for user_id in user_ids:
-        # Check if user exists
         user = db.query(User).filter(User.id == user_id).first()
         if not user:
             raise HTTPException(
@@ -193,7 +166,6 @@ async def add_members(
                 detail=f"User with id {user_id} not found"
             )
         
-        # Check if user is already a member
         existing_member = db.query(chat_users).filter(
             and_(
                 chat_users.c.chat_id == chat_id,
@@ -220,10 +192,6 @@ async def remove_member(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """
-    Remove member from chat
-    """
-    # Check if chat exists and user is a member
     chat = db.query(Chat).join(chat_users).filter(
         and_(
             Chat.id == chat_id,
@@ -237,7 +205,6 @@ async def remove_member(
             detail="Chat not found or you're not a member"
         )
     
-    # Check if user to remove exists in the chat
     member = db.query(chat_users).filter(
         and_(
             chat_users.c.chat_id == chat_id,
@@ -251,7 +218,6 @@ async def remove_member(
             detail=f"User with id {user_id} is not a member of this chat"
         )
     
-    # Remove member
     db.execute(
         chat_users.delete().where(
             and_(
