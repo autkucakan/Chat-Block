@@ -9,9 +9,9 @@ from passlib.context import CryptContext
 from ..config import settings
 
 #jwt
-SECRET_KEY = settings.SECRET_KEY #todo: .env'den çekilecke
-ALGORITHM = settings.ALGORITHM
-ACCESS_TOKEN_EXPIRE_MINUTES = settings.ACCESS_TOKEN_EXPIRE_MINUTES
+SECRET_KEY = "40e8477c447997f151ccdc970f4f83ca090d0f2c2bebc305d61d4f791c0a17c67d62a9ca3897904bb3d14e6ccc98e18b17e29c24e24e72a66e60ea6940f912c1"
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
