@@ -29,7 +29,9 @@ origins = [
     "http://127.0.0.1",
     "http://localhost:5500",
     "http://127.0.0.1:5500",
-    "http://172.16.12.214:3000",    # gecici olarak eklendi
+    "http://172.16.12.214:3000",
+    "http://217.18.210.30:3000",
+    "http://217.18.210.30:8000"
 ]
 
 app.add_middleware(

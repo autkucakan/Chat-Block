@@ -2,7 +2,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-SQLALCHEMY_DATABASE_URL = "postgresql://postgres:demirezen@localhost:5432/msg" #todo: şifreyi değiştir, userı değiştir, böyle bilgileri .env'e al
+SQLALCHEMY_DATABASE_URL = "postgresql://{settings.DATABASE_USER}:{settings.DATABASE_PASSWORD}@{settings.DATABASE_HOSTNAME}:{settings.DATABASE_PORT}/{settings.DATABASE_NAME}" #todo: şifreyi değiştir, userı değiştir, böyle bilgileri .env'e al
 
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
 
@@ -13,7 +13,6 @@ Base = declarative_base()
 def create_tables():
     # models.py içindeki sınıfların metadata'ya eklenmesi için import ediyoruz
     try:
-        from app.models import User, Chat, Message, chat_users
         print("Models imported")
         print("Creating tables...")
         Base.metadata.create_all(bind=engine)
