@@ -9,7 +9,7 @@ export default function ChatRoom() {
   const { chatId } = useParams();
   const [msgs, setMsgs] = useState([]);
   const token = localStorage.getItem('token');
-  const wsUrl = `ws://172.16.12.214:8000/api/ws/chat/${chatId}?token=${token}`;
+  const wsUrl = `ws://217.18.210.30:8000/api/ws/chat/${chatId}?token=${token}`;
 
   // İlk olarak geçmiş mesajları al
   useEffect(() => {
