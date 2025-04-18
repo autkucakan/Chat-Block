@@ -26,13 +26,14 @@ origins = [
     "http://127.0.0.1:3000",
     "http://localhost",
     "http://127.0.0.1",
-    "http://localhost:5500",  # Common port for live servers
+    "http://localhost:5500",
     "http://127.0.0.1:5500",
+    "http://172.16.12.214:3000",    # gecici olarak eklendi
 ]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Use the specific origins list instead of "*"
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],  # Add OPTIONS
     allow_headers=[
@@ -53,13 +54,13 @@ app.include_router(messages.router, prefix="/api", tags=["Messages"])
 app.include_router(websocket_router, prefix="/api/ws", tags=["WebSocket"])
 
 @app.get("/")
-def read_root(): #api çalışıyor mu
-    return {"status": "API 200"}
+def read_root():
+    return {"status": "API is running"}
 
-@app.get("/api/test") #DB bağlanıyor mu
+@app.get("/api/test")
 def test_db(db: Session = Depends(get_db)):
-    result = db.execute(text("SELECT 1"))
-    version = db.execute(text("SELECT version()")) #todo: deploylarken sil hiç güvenli değil
-    return {"status": "DB 200",
-            "version": version.fetchone()[0]
-    } #Çalışmıyorsa 500 döndürüyor zaten
+    try:
+        db.execute(text("SELECT 1"))
+        return {"status": "Database connection successful"}
+    except Exception as e:
+        return {"status": "Database connection failed", "error": str(e)}

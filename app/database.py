@@ -2,7 +2,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-SQLALCHEMY_DATABASE_URL = "postgresql://postgres:-411903-!@localhost:5432/blockchat" #todo: şifreyi değiştir, userı değiştir, böyle bilgileri .env'e al
+SQLALCHEMY_DATABASE_URL = "postgresql://postgres:demirezen@localhost:5432/msg" #todo: şifreyi değiştir, userı değiştir, böyle bilgileri .env'e al
 
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
 
