@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy.sql import text
 from app.routers import auth, users, chats, messages
 from app.routers.websocket import router as websocket_router
+from .config import settings
 
 create_tables()
 
