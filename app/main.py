@@ -1,13 +1,11 @@
 from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
-from app.database import get_db, create_tables
+from app.database import get_db
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import text
 from app.routers import auth, users, chats, messages
 from app.routers.websocket import router as websocket_router
 from .config import settings
-
-create_tables()
 
 app = FastAPI(
     title="Block Chat",
