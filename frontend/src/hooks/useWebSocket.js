@@ -8,21 +8,21 @@ export default function useWebSocket(url, onMessage) {
     ws.current = new WebSocket(url);
 
     ws.current.onopen = () => {
-      console.log('WebSocket bağlantısı açıldı');
+      console.log('WebSocket connection opened');
     };
     ws.current.onmessage = e => {
       try {
         const msg = JSON.parse(e.data);
         onMessage(msg);
       } catch {
-        console.error('Mesaj parse hatası', e.data);
+        console.error('Message parse error', e.data);
       }
     };
     ws.current.onclose = e => {
-      console.log('WebSocket kapandı', e);
+      console.log('WebSocket connection closed', e);
     };
     ws.current.onerror = e => {
-      console.error('WebSocket hatası', e);
+      console.error('WebSocket error', e);
     };
 
     return () => {
@@ -35,7 +35,7 @@ export default function useWebSocket(url, onMessage) {
     if (ws.current && ws.current.readyState === WebSocket.OPEN) {
       ws.current.send(message);
     } else {
-      console.error('WebSocket hazır değil (state:', ws.current.readyState, ')');
+      console.error('WebSocket is not ready (state:', ws.current.readyState, ')');
     }
   }, []);
 

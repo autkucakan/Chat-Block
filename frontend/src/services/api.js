@@ -1,11 +1,13 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://172.16.12.214:8000/api',
+  baseURL: process.env.REACT_APP_API_URL,
   headers: {
     'Content-Type': 'application/json'
   }
 });
+
+console.log("API URL in api.js:", process.env.REACT_APP_API_URL);
 
 // Request interceptor
 api.interceptors.request.use(

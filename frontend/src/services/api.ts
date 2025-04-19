@@ -1,6 +1,9 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:8000/api';
+const API_URL = process.env.REACT_APP_API_URL;
+const PLAIN_URL = process.env.REACT_APP_PLAIN_URL;
+console.log("API URL inside api.ts:", process.env.REACT_APP_API_URL);
+console.log("PLAIN URL inside api.ts:", process.env.REACT_APP_PLAIN_URL); // Console logları sil sonra
 
 const api = axios.create({
   baseURL: API_URL,
@@ -62,7 +65,7 @@ export const messages = {
 
 // WebSocket bağlantısı için yardımcı fonksiyon
 export const createWebSocket = (path: string, token: string) => {
-  const ws = new WebSocket(`ws://localhost:8000${path}?token=${token}`);
+  const ws = new WebSocket(`ws://${PLAIN_URL}${path}?token=${token}`);
   return ws;
 };
 

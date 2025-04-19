@@ -5,7 +5,6 @@ migrations/__pycache__
 migrations/versions/__pycache__
 
 #env
-.env
-
-#
 venv
+app/.env
+frontend/.env
