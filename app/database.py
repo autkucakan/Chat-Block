@@ -13,15 +13,6 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()
 
-""" def create_tables():
-        print("Models imported")
-        print("Creating tables...")
-        Base.metadata.create_all(bind=engine)
-        print("Tables created successfully")
-    except Exception as e:
-        print(f"Error creating tables: {e}")
-        raise """
-
 def get_db():
     db = SessionLocal()
     try:
