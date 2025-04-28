@@ -5,7 +5,10 @@ from .config import settings
 
 SQLALCHEMY_DATABASE_URL = f"postgresql://{settings.database_username}:{settings.database_password}@{settings.database_hostname}:{settings.database_port}/{settings.database_name}" #todo: şifreyi değiştir, userı değiştir, böyle bilgileri .env'e al
 
-print(f"Database hostname: {settings.database_hostname}") #todo: işin bitince kaldır
+print(SQLALCHEMY_DATABASE_URL) #todo: işin bitince kaldır
+print("DB HOST →", settings.database_hostname)
+print("DB NAME →", settings.database_name)
+
 
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
 

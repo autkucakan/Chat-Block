@@ -8,7 +8,7 @@ from app.routers.websocket import router as websocket_router
 from .config import settings
 
 app = FastAPI(
-    title="Block Chat",
+    title="Flutter Chat",
     description="Real-time chat application API",
     version="0.1.0"
 )
@@ -20,27 +20,12 @@ app = FastAPI(
 # İzin varsa, asıl istek gerçekleştirilir
 # powered by chatgpt
 
-origins = [
-    "http://localhost",
-    "http://127.0.0.1",
-    "http://217.18.210.30:3000",
-    "http://172.16.12.215:3000",
-    "http://localhost:5173",
-    "http://127.0.0.1:5173"
-]
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["*"],
     allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],  # Add OPTIONS
-    allow_headers=[
-        "Authorization",
-        "Content-Type",
-        "Accept",
-        "Origin",
-        "X-Requested-With",
-    ],
+    allow_methods=["*"],  # Add OPTIONS
+    allow_headers=["*"],
     expose_headers=["*"],
     max_age=600,
 )
@@ -51,11 +36,11 @@ app.include_router(chats.router, prefix="/api/chats", tags=["Chats"])
 app.include_router(messages.router, prefix="/api", tags=["Messages"])
 app.include_router(websocket_router, prefix="/api/ws", tags=["WebSocket"])
 
-@app.get("/")
+@app.get("/api")
 def read_root():
     return {"status": "API is running"}
 
-@app.get("/api/test")
+@app.get("/api/dbtest")
 def test_db(db: Session = Depends(get_db)):
     try:
         db.execute(text("SELECT 1"))

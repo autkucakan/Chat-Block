@@ -13,10 +13,6 @@ chat_users = Table(
     Column('chat_id', Integer, ForeignKey('chats.id'), primary_key=True)
 )
 
-class UserStatus(str, enum.Enum):
-    ONLINE = "online"
-    OFFLINE = "offline"
-    AWAY = "away"
 
 class User(Base):
     __tablename__ = 'users'
@@ -27,7 +23,6 @@ class User(Base):
     hashed_password = Column(String(100), nullable=False)
     created_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=text('now()'))
     last_seen = Column(TIMESTAMP(timezone=True), nullable=True)
-    status = Column(Enum(UserStatus), default=UserStatus.OFFLINE, nullable=False)
     
     chats = relationship("Chat", secondary=chat_users, back_populates="users")
     messages = relationship("Message", back_populates="user")

@@ -4,8 +4,8 @@ from typing import List, Optional
 from datetime import datetime, timezone
 
 from ..database import get_db
-from ..models import User, UserStatus
-from ..schemas import UserResponse, UserUpdate, UserStatusUpdate
+from ..models import User
+from ..schemas import UserResponse, UserUpdate
 from .oauth2 import get_current_user
 
 router = APIRouter()
@@ -83,45 +83,3 @@ async def delete_user(
     db.delete(user)
     db.commit()
     return None
-
-@router.get("/{user_id}/status", response_model=UserStatusUpdate)
-async def get_user_status(
-    user_id: int,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
-):
-    user = db.query(User).filter(User.id == user_id).first()
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="User not found"
-        )
-    
-    return {"status": user.status}
-
-@router.put("/{user_id}/status", response_model=UserStatusUpdate)
-async def update_user_status(
-    user_id: int,
-    status_update: UserStatusUpdate,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
-):
-    if current_user.id != user_id:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Not authorized to update this user's status"
-        )
-    
-    user = db.query(User).filter(User.id == user_id).first()
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="User not found"
-        )
-    
-    user.status = status_update.status
-    user.last_seen = datetime.now(timezone.utc)
-    
-    db.commit()
-    db.refresh(user)
-    return {"status": user.status}
